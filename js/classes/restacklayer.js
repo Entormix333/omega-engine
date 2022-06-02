@@ -51,8 +51,7 @@ class ReStackLayer
             [
                 new RestackLayerUpgrade("Increase the Resource Multiplier",
                     level => new Decimal(1e24),
-                    level => Decimal.pow(2, level),{
-                        maxLevel: 1,
+                    level => Decimal.pow(10, level) {
                         getEffectDisplay: effectDisplayTemplates.numberStandard(0, "^")
                     })
             ],
@@ -153,7 +152,31 @@ class ReStackLayer
                             return this.level.gt(0) ? "Doesn't reset" : "Resets";
                         }
                     }),
+            ],
+            [
+                new RestackLayerUpgrade("Template",
+                    level => new Decimal("1ee2048"),
+                    level => level.gt(0), {
+                        maxLevel: 1,
+                        getEffectDisplay: function()
+                        {
+                            return this.level.gt(0) ? "Doesn't reset" : "Resets";
+                        }
+                    }),
             ]
+            [
+                new RestackLayerUpgrade("Template",
+                    level => new Decimal("1ee5000"),
+                    level => new Decimal(1).add(level), {
+                        maxLevel: 1
+                    }),
+                new RestackLayerUpgrade("Template",
+                    level => new Decimal("1eee7"),
+                    level => new Decimal(1).add(level.mul(0.15)), {
+                        maxLevel: 1,
+                        getEffectDisplay: effectDisplayTemplates.numberStandard(2, "^")
+                    }),
+            ],
         ];
         this.upgradeTree[1][0].setRequirements([this.upgradeTree[0][0]], [this.upgradeTree[1][1]]);
         this.upgradeTree[1][1].setRequirements([this.upgradeTree[0][0]], [this.upgradeTree[1][0]]);
@@ -167,6 +190,8 @@ class ReStackLayer
         this.upgradeTree[7][0].setRequirements([this.upgradeTree[6][0]], [this.upgradeTree[7][1]]);
         this.upgradeTree[7][1].setRequirements([this.upgradeTree[6][0]], [this.upgradeTree[7][0]]);
         this.upgradeTree[8][0].setRequirements([this.upgradeTree[7][0], this.upgradeTree[7][1]], []);
+        this.upgradeTree[9][0].setRequirements([this.upgradeTree[8][0], this.upgradeTree[8][0]], []);
+        this.upgradeTree[10][0].setRequirements([this.upgradeTree[9][0], this.upgradeTree[9][0]], []);
         this.upgradeTreeNames = {
             resourceMultiplier: this.upgradeTree[0][0],
             resourceMultiplierUpgrades: this.upgradeTree[1][0],
@@ -181,6 +206,9 @@ class ReStackLayer
             template1: this.upgradeTree[7][0],
             template2: this.upgradeTree[7][1],
             template3: this.upgradeTree[8][0]
+            template4: this.upgradeTree[9][0]
+            template5: this.upgradeTree[10][0]
+            template6: this.upgradeTree[10][1]
         };
     }
 
@@ -197,7 +225,7 @@ class ReStackLayer
     getRestackGain()
     {
         const l = game.metaLayer.active ? game.metaLayer.layer : new Decimal(game.layers.length - 1);
-        let gain = l >= 9 ? Decimal.pow(10, l.sub(9).floor()) : new Decimal(0);
+        let gain = l >= 9 ? Decimal.pow(1e6, l.sub(9).floor()) : new Decimal(0);
         if (!game.metaLayer.active) {
             for (const layer of game.layers) {
                 if (layer.hasChallenges() && layer.layer >= 9) {
