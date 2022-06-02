@@ -52,6 +52,7 @@ class ReStackLayer
                 new RestackLayerUpgrade("Increase the Resource Multiplier",
                     level => new Decimal(1e24),
                     level => Decimal.pow(10, level) {
+                        maxLevel: 1e300,
                         getEffectDisplay: effectDisplayTemplates.numberStandard(0, "^")
                     })
             ],
